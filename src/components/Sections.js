@@ -10,9 +10,10 @@ import { Link } from 'react-router'
 
 const { isLoaded, isEmpty, dataToJS } = helpers
 
-@firebase(['sections' ])
-@connect(({firebase}) => ({
-  sections : dataToJS(firebase, 'sections')
+@firebase(['sections'])
+@connect(({firebase, user}) => ({
+  sections : dataToJS(firebase, 'sections'),
+  user
 })
 )
 @reduxForm({
@@ -35,14 +36,14 @@ class Sections extends Component {
     :firebase.push('sections', { ...e }, () => this.setState({message : 'a bien été ajouté'}) )
   }
   render() {
-    const { firebase, fields: { name, description }, handleSubmit, sections } = this.props
+    const { routes, firebase, fields: { name, description }, handleSubmit, sections, user } = this.props
     // console.log(sections);
     let sectionsList = (!isLoaded(sections)) ?
                           <Loading />
                         : (isEmpty(sections) ) ?
                               'sections is empty'
                             : _.map(sections, (section, id) => {return <li key={id}>{section.name} - {section.description} <Link to={`/sections/section/${id}`}> editer </Link></li>})
-    return (
+    return user.admin ? (
       <div>
       <form onSubmit = { handleSubmit( (data) => { this.validate(data) } ) }>
       <label>Name</label>
@@ -56,6 +57,11 @@ class Sections extends Component {
       </ul>
       <Link to='/'>back</Link>
       {this.props.children}
+      </div>
+    ) : (
+      <div>
+      {this.props.children}
+      <button onClick={()=>history.goBack()}> back </button>
       </div>
     )
   }

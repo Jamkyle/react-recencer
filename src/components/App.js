@@ -9,22 +9,38 @@ import Loading from 'compo/Loading'
 import Register from 'compo/Register'
 
 const { isLoaded, isEmpty, dataToJS } = helpers
-
-@connect( ({user}) => ({
+const localUser = JSON.parse(localStorage.getItem('currentUser')) || {}
+@firebase(['currentUser'])
+@connect( ({user, firebase}) => ({
+    currentUser: dataToJS(firebase, 'currentUser'),
     user
   }),
-  (dispatch)=>({ reset : () => dispatch({type:'DECONNECT_USER'}) })
+  (dispatch)=>({ reset : () => dispatch({type:'DECONNECT_USER'}), dispatchUser : (user) => dispatch({ type:"CURRENT_USER", user }) })
 )
 class App extends Component {
 
+  deconnect(){
+    const {firebase, reset, currentUser} = this.props
+      reset()
+      if(localUser != null)
+        localStorage.removeItem('currentUser')
+  }
+
+  componentDidMount(){
+    const {user, dispatchUser} = this.props;
+    (!isEmpty(localUser) && isEmpty(user) )? dispatchUser(localUser) : null
+  }
+
   render() {
-    const {user, reset} = this.props
+    const {user} = this.props;
+
+
 
     let link, welcome, connecter, isAdmin
     if(user.email!=null){
       (user.admin) ? isAdmin=<span>(admin)</span> : null
       welcome = (<h1>Bonjour {user.firstName} {isAdmin}</h1>)
-      connecter = (<div onClick={()=>reset()} ><Link to='/' > Se déconnecter </Link></div>)
+      connecter = (<div onClick={()=> this.deconnect()} ><Link to='/' > Se déconnecter </Link></div>)
     }else {
       welcome = (<h1>Connectez vous ou Recensez vous</h1>)
       connecter = (<div><Link to='/' >Se connecter</Link></div>)
@@ -32,9 +48,7 @@ class App extends Component {
     if(user.admin)
       link = (<div><Link to='/sections' > Sections </Link> <Link to='/users' > Users </Link></div>)
     else if(user.email!=null){
-
       link = (<div> <Link to={`/user/${user.id}`}> Profile </Link> </div>)
-
      }
 
     return (

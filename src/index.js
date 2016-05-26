@@ -13,7 +13,6 @@ import { Router, Route, browserHistory, IndexRoute, Redirect } from 'react-route
 import { syncHistoryWithStore, routerReducer, routerReducer as routing } from 'react-router-redux'
 import users from 'reducers/Users'
 import user from 'reducers/User'
-import userMod from 'reducers/UserMod'
 import sections from 'reducers/Sections'
 import { reducer as formReducer } from 'redux-form'
 import {reduxReactFirebase, firebaseStateReducer} from 'redux-react-firebase'
@@ -24,7 +23,6 @@ const reducers = combineReducers({
   form : formReducer,
   users,
   user,
-  userMod,
   routing
 })
 
@@ -35,8 +33,7 @@ const store = storeWithFirebase(
   reducers,
   {
     users : [],
-    user : {},
-    userMod : {}
+    user : {}
   }
 )
 

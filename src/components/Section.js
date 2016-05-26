@@ -5,8 +5,7 @@ import { connect } from 'react-redux'
 import { reduxForm } from 'redux-form'
 import { Link } from 'react-router'
 
-const {dataToJS, isLoaded, isEmpty} = helpers
-
+const {dataToJS, isLoaded, isEmpty, pathToJs} = helpers
 @firebase(
   ({params}) => ([
     `sections/${params.sectionId}`,

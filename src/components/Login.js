@@ -9,9 +9,10 @@ import Loading from 'compo/Loading'
 
 const { isLoaded, isEmpty, dataToJS } = helpers
 
-@firebase(['users'])
+@firebase(['users', 'currentUser'])
 @connect(({firebase, user}) => ({
   users : dataToJS(firebase, 'users'),
+  currentUser : dataToJS(firebase, 'currentUser'),
   user
 }),
 (dispatch) => ({ dispatchUser : (user) => dispatch({ type:"CURRENT_USER", user }) })
@@ -30,17 +31,22 @@ class User extends Component {
     if(users != null)
       for(let i in users){
         if(users[i].email === e.email)
-          {dispatchUser({...users[i], id : i }); this.setState({message : users[i].firstName+' Vous etes Connecter'}) }
+          {
+            dispatchUser({...users[i], id : i })
+            this.setState({message : users[i].firstName+' Vous etes Connecter'})
+            firebase.set('currentUser', {...users[i], id : i })
+            localStorage.setItem('currentUser', JSON.stringify({...users[i], id : i }))
+         }
       }
-
         // (bool )? this.setState({message :'cette email est déjà utilisé'})
         // :firebase.push('users', {...e, admin : false}, () => this.setState({message : 'a bien été enregistré'}) )
   }
 
+
   render() {
-    const { fields: { email}, handleSubmit, user} = this.props
-    const { message } = this.state
-    // console.log(sections);
+    const { fields: { email}, handleSubmit, user, dispatchUser, currentUser} = this.props
+    const { message } = this.state;
+
     return (
       ( user.email == null )?
       <div>
