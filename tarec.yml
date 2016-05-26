@@ -1,0 +1,9 @@
+
+aliases:
+  - compo: ./src/components
+  - reducers: ./src/reducers
+  - const : ./src/const
+
+plugins:
+  - tarec-plugin-mocha-test
+  - tarec-plugin-sass

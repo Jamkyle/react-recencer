@@ -1,0 +1,36 @@
+{
+  "name": "react-recencer",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "scripts": {
+    "start": "tarec start",
+    "build": "tarec build",
+    "test": "tarec mochaTest",
+    "test:coverage": "tarec mochaTest --coverage",
+    "report": "tarec mochaTestReport -o",
+    "publish": "npm run build && gh-pages -d dist"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "firebase": "^2.4.2",
+    "immutable": "^3.8.1",
+    "lodash": "^4.12.0",
+    "react": "*",
+    "react-dom": "*",
+    "react-router-redux": "^4.0.4",
+    "redux": "^3.5.2",
+    "redux-react-firebase": "^1.10.0",
+    "redux-thunk": "^2.1.0"
+  },
+  "devDependencies": {
+    "gh-pages": "^0.11.0",
+    "react-redux": "^4.4.5",
+    "react-router": "^2.4.0",
+    "redux-form": "^5.2.3",
+    "tarec-plugin-mocha-test": "^1.2.0",
+    "tarec-plugin-sass": "geowarin/tarec-plugin-sass#master"
+  }
+}
