@@ -3,6 +3,8 @@ aliases:
   - compo: ./src/components
   - reducers: ./src/reducers
   - const : ./src/const
+  - styles : ./src/styles
+  - middleware : ./src/middleware
 
 plugins:
   - tarec-plugin-mocha-test

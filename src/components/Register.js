@@ -3,9 +3,10 @@ import _ from 'lodash'
 import { helpers, firebase } from 'redux-react-firebase'
 import { connect } from 'react-redux'
 import { reduxForm } from 'redux-form'
-import { List } from 'compo/List'
 import {Link} from 'react-router'
 import Loading from 'compo/Loading'
+
+import 'const/messages'
 
 const { isLoaded, isEmpty, dataToJS } = helpers
 
@@ -24,7 +25,7 @@ const { isLoaded, isEmpty, dataToJS } = helpers
   }
 })
 class Register extends Component {
-  state = {message : ''}
+  state = { message : '' }
 
   validate(e){
     let bool = false
@@ -36,8 +37,12 @@ class Register extends Component {
           bool = true
       }
 
-        (bool )? this.setState({message :'cette email est déjà utilisé'})
-        :firebase.push('users', {...e, admin : false}, () => this.setState({message : 'a bien été enregistré'}) )
+        if(bool )
+          this.setState({message :ERROR_ON_REGISTER})
+        else {
+          firebase.push('users', {...e, admin : false})
+          this.setState({message : SUCCESS_ON_REGISTER})
+        }
   }
 
   render() {

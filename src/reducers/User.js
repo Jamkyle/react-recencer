@@ -1,4 +1,6 @@
-const user = (state = {}, action) =>{
+
+const localUser = JSON.parse(localStorage.getItem('currentUser'))
+const user = (state = localUser || {}, action) =>{
   switch (action.type) {
     case "CURRENT_USER":
       return action.user
@@ -6,7 +8,6 @@ const user = (state = {}, action) =>{
     case "DECONNECT_USER":
       return {}
       break;
-
     default: return state
 
   }
