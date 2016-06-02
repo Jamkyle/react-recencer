@@ -3,7 +3,7 @@ const localUser = JSON.parse(localStorage.getItem('currentUser'))
 const user = (state = localUser || {}, action) =>{
   switch (action.type) {
     case "CURRENT_USER":
-      return action.user
+      return {...action.user, isAuth : true}
       break;
     case "DECONNECT_USER":
       return {}

@@ -1,3 +1,5 @@
+import {blue900} from 'material-ui/styles/colors';
+
 export const style = {
      menu : {
       display: 'inline-block',
@@ -8,6 +10,14 @@ export const style = {
     },
     card : {
       padding: '2em'
+    },
+    profile : {
+      position : 'relative',
+      top : 0,
+      padding: '2em'
+    },
+    palette : {
+      blue900 : blue900
     }
 
 }

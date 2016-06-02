@@ -16,8 +16,10 @@
   "license": "MIT",
   "dependencies": {
     "firebase": "^2.4.2",
+    "firebase-token-generator": "^2.0.0",
     "immutable": "^3.8.1",
     "lodash": "^4.12.0",
+    "material-design-icons": "^2.2.3",
     "material-ui": "^0.15.0",
     "react": "*",
     "react-dom": "*",

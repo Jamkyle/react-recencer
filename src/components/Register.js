@@ -5,9 +5,19 @@ import { connect } from 'react-redux'
 import { reduxForm } from 'redux-form'
 import {Link} from 'react-router'
 import Loading from 'compo/Loading'
+import {ObjectSelect} from 'compo/ObjectSelect'
 
-import 'const/messages'
+import TextField from 'material-ui/TextField';
+import FlatButton from 'material-ui/FlatButton';
+import RaisedButton from 'material-ui/RaisedButton';
+import SelectField from 'material-ui/SelectField';
+import MenuItem from 'material-ui/MenuItem';
+import Menu from 'material-ui/Menu';
+import DropDownMenu from 'material-ui/DropDownMenu';
+import Popover from 'material-ui/Popover';
 
+import {SUCCESS_ON_REGISTER} from 'const/messages'
+import styles from 'styles/style'
 const { isLoaded, isEmpty, dataToJS } = helpers
 
 @firebase([ 'users', 'sections' ])
@@ -40,7 +50,8 @@ class Register extends Component {
         if(bool )
           this.setState({message :ERROR_ON_REGISTER})
         else {
-          firebase.push('users', {...e, admin : false})
+          let ref = firebase.push('users')
+          ref.set({ ...e, id:ref.key() })
           this.setState({message : SUCCESS_ON_REGISTER})
         }
   }
@@ -57,15 +68,21 @@ class Register extends Component {
     return (
       <div>
         <form onSubmit = { handleSubmit( (data) => { this.validate(data) } ) } >
-          <label>First Name</label>
-          <input type="text" placeholder="First Name" { ...firstName } required/>
-          <label>Last Name</label>
-          <input type="text" placeholder="Last Name" { ...lastName } required/>
-          <label>Email</label>
-          <input type="mail" placeholder="email" { ...email } required/>
-          <label>Sections</label>
-          <ObjectSelect multiple option={ allSections } {...sections}/>
-          <button type="submit" >{buttonName}</button>
+          <TextField
+            floatingLabelText="Prénom"
+            { ...firstName }
+          required /><br/>
+          <TextField
+            floatingLabelText="Nom"
+            { ...lastName }
+          required /><br/>
+          <TextField
+            floatingLabelText="Email"
+            { ...email }
+            type="email"
+          required /><br/>
+          <ObjectSelect multiple array={ allSections } title='section' field={'name'} {...sections}/>
+          <RaisedButton type="submit" >{buttonName}</RaisedButton>
         </form>
         <p style={{color : 'red', fontSize: '0.8em'}}>{ message }</p>
 
@@ -73,29 +90,6 @@ class Register extends Component {
     )
   }
 
-}
-
-
-export class ObjectSelect extends Component {
-
-  getValues(e){
-    let sections = []
-    for(let i in e.options){
-      if(e.options[i].selected){
-        sections.push(e.options[i].value)
-      }
-    }
-    return sections
-  }
-
-  render(){
-    const { option, multiple, onBlur, onChange, options, value, ...rest } = this.props
-    return (
-      <select multiple onChange = { event =>  { onChange( this.getValues(event.target) ) } }  value = { [...value] } {...rest}>
-      {option.map((section, id) => <option key={id} value={section.name} >{section.name}</option>)}
-      </select>
-    )
-  }
 }
 
 

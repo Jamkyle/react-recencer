@@ -1,37 +1,40 @@
 import _ from 'lodash'
+import {push} from 'react-router-redux'
+
 
 export const localMiddleware = store => next => action => {
+  const { user , type, data, form } = action
+  const { dispatch , getState } = store
 
-  const { user , type, data, path } = action
-  const localUser = JSON.parse(localStorage.getItem('currentUser'))
-  console.log(action);
   switch (type) {
     case 'CURRENT_USER':
-      localStorage.setItem('currentUser', JSON.stringify(user))
+      localStorage.setItem( 'currentUser', JSON.stringify({ ...user, isAuth : true }) )
+      next(action)
+      if (user.id) {
+        dispatch(push(`/user/${user.id}`))
+      }else {
+        dispatch(push('/sections'))
+      }
       break;
     case 'DECONNECT_USER':
       localStorage.removeItem('currentUser')
+      localStorage.removeItem('userMod')
+      localStorage.removeItem('sectionMod')
+      store.dispatch(push('/'))
       break;
-    case '@@reactReduxFirebase/SET':
-      if( _.startsWith(path, 'users/') )
+    case 'redux-form/INITIALIZE':
+      let aData = {
+       ...data
+      }
+      if( form === 'user' )
         localStorage.setItem(
           'userMod',
-          JSON.stringify(
-          {
-           ...data,
-           id: _.split( path, '/', 2 )[1]
-          }
-         )
+          JSON.stringify(aData)
         )
-      else if( _.startsWith(path, 'sections/') )
+      else if(form === 'section' )
         localStorage.setItem(
           'sectionMod',
-          JSON.stringify(
-          {
-           ...data,
-           id: _.split( path, '/', 2 )[1]
-          }
-         )
+          JSON.stringify(aData)
         )
       break;
     default: return next(action)

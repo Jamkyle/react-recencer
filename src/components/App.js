@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import _ from 'lodash'
 import { helpers, firebase } from 'redux-react-firebase'
 import { connect } from 'react-redux'
-import { browserHistory, push, go } from 'react-router-redux'
+import { browserHistory, push, goBack } from 'react-router-redux'
 import { reduxForm } from 'redux-form'
 import { Link } from 'react-router'
 import Loading from 'compo/Loading'
@@ -10,6 +10,7 @@ import Register from 'compo/Register'
 import AppBar from 'material-ui/AppBar';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
+import Divider from 'material-ui/Divider';
 import {Popover, PopoverAnimationVertical} from 'material-ui/Popover';
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
 import FlatButton from 'material-ui/FlatButton';
@@ -25,9 +26,10 @@ const localUser = JSON.parse(localStorage.getItem('currentUser')) || {}
     user
   }),
   (dispatch)=>({
-    logout : () => dispatch(push('/')),
-    reset : () => dispatch({type:'DECONNECT_USER'}),
+    logout : () => { dispatch({type:'DECONNECT_USER'}) },
     dispatchUser : (user) => dispatch({ type:"CURRENT_USER", user }),
+    back : () => dispatch( goBack() ),
+    goTo : (path) => dispatch( push(path) )
   })
 )
 class App extends Component {
@@ -36,8 +38,8 @@ class App extends Component {
     }
 
   deconnect(){
-    const {reset, logout} = this.props
-      reset()
+    const {logout} = this.props
+    this.handleRequestClose();
       logout()
   }
 
@@ -57,30 +59,34 @@ class App extends Component {
 
   render() {
 
-    const {user, location} = this.props;
-    let link, welcome, connecter, isAdmin
+    const {user, location, back, goTo} = this.props;
+    let link, welcome, connecter, isAdmin, buttonBack
     if(user.email!=null){
       (user.admin) ? isAdmin='- (admin)' : isAdmin='- (membre)'
       welcome = `Bonjour ${user.firstName} ${isAdmin}`
-      connecter = (<MenuItem primaryText='Se déconnecter' onTouchTap={()=>{this.handleRequestClose();this.deconnect()}} />)
+      connecter = (<MenuItem primaryText='Se déconnecter' onTouchTap={ ()=>{this.deconnect()} } />)
     }
     else {
-      if(location.pathname != '/')
+      if(location.pathname !== '/')
+      {
         connecter = (<Link style={style.noDeco} to='/'><MenuItem primaryText="Se connecter" onTouchTap={this.handleRequestClose}/> </Link>)
+      }
       welcome = ('Recensement facile et rapide')
     }
       if(user.email!=null){
       link = (<div>
                 <Link to='/sections' style={style.noDeco} > <MenuItem primaryText="Sections" onTouchTap={this.handleRequestClose} /> </Link>
                 <Link to='/users' style={style.noDeco}> <MenuItem primaryText="Users" onTouchTap={this.handleRequestClose} /> </Link>
-                <Link to={`/user/${user.id}`} style={style.noDeco}> <MenuItem primaryText="Profile" onTouchTap={this.handleRequestClose} /> </Link>
+                <MenuItem primaryText="Profile" onTouchTap={()=>{ goTo(`/user/${user.id}`); this.handleRequestClose() } } disabled={ (user.email==='Guest')}/>
               </div>
             )
      }
+     (location.pathname !== '/')?
+      buttonBack = <FlatButton onMouseDown={ () => back() } className='buttonBack'> back </FlatButton> : null
 
     return (
       <div>
-        <AppBar title={welcome} onLeftIconButtonTouchTap={this.showMenu}/>
+        <AppBar title={welcome} style={{backgroundColor: style.palette.blue900}} onLeftIconButtonTouchTap={this.showMenu}/>
         <Popover open={this.state.open}
           anchorEl={this.state.anchorEl}
           anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
@@ -89,12 +95,14 @@ class App extends Component {
           animation={PopoverAnimationVertical}>
           <Menu>
             {link}
+            <Divider inset={true}/>
             <Link to='/register' style={style.noDeco}><MenuItem primaryText="Se recenser" onTouchTap={this.handleRequestClose} /></Link>
             {connecter}
           </Menu>
         </Popover>
         <Card style={style.card}>
-        {this.props.children}
+          {this.props.children}
+          {buttonBack}
         </Card>
       </div>
     )

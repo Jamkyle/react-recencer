@@ -7,11 +7,16 @@ import { reduxForm } from 'redux-form'
 import { ListUsers } from 'compo/ListUsers'
 import { Link } from 'react-router'
 import Loading from 'compo/Loading'
+
+import TextField from 'material-ui/TextField'
 import RaisedButton from 'material-ui/RaisedButton'
 import FlatButton from 'material-ui/FlatButton'
 
+import FirebaseTokenGenerator from 'firebase-token-generator'
+
 import {ERROR_ON_LOGIN, SUCCESS_ON_LOGIN} from 'const/messages'
 
+const tokengenerator = new FirebaseTokenGenerator('RtMBHbOo09RnqR8W8XqI1AUn0hfd3BMjYq6wwYv0')
 const { isLoaded, isEmpty, dataToJS } = helpers
 
 @firebase(['users', 'currentUser'])
@@ -21,8 +26,7 @@ const { isLoaded, isEmpty, dataToJS } = helpers
     user
   }),
   (dispatch) => ({
-    dispatchUser : (user) => dispatch({ type:"CURRENT_USER", user }),
-    login : (id)=>dispatch(replace(`/user/${id}`))
+    login : user => dispatch({ type:"CURRENT_USER", user })
   })
 )
 @reduxForm({
@@ -30,39 +34,44 @@ const { isLoaded, isEmpty, dataToJS } = helpers
   fields: ['email'], // all the fields in your form
 })
 class Login extends Component {
+
   state ={ message : ''}
   validate(e){
     let bool = false
-    const { users, firebase, dispatchUser, login} = this.props
+    const { users, firebase, login} = this.props
     if(users != null)
       for(let i in users)
       {
         if(users[i].email === e.email)
         {
           bool=true
-          firebase.set('currentUser', {...users[i], id : i })
-          dispatchUser({...users[i], id : i })
-          login(i)
-
+          login({...users[i]})
         }
       }
+
+    // firebase.ref.authWithCustomToken(token, (error, authdata)=>{
+    //     console.log(authdata);
+    // })
 
       bool ? this.setState({message : SUCCESS_ON_LOGIN}) : this.setState({message : ERROR_ON_LOGIN})
   }
 
 
   render() {
-    const { fields: { email }, handleSubmit, user, dispatchUser, currentUser} = this.props
+    const { fields: { email }, handleSubmit, user, login, currentUser} = this.props
     const { message } = this.state
     return (
       ( user.email == null )?
       <div>
         <form onSubmit = { handleSubmit( (data) => { this.validate(data) } ) } >
-          <label>Email</label>
-          <input type="mail" placeholder="email" { ...email } required/>
+        <TextField
+          floatingLabelText="Email"
+          { ...email }
+          type="email"
+        required />
           <FlatButton type="submit" >Se connecter </FlatButton>
+          <RaisedButton label='as Guest' primary={true} onMouseDown={ ()=> { login({ firstName: 'Guest', email : 'Guest' }) } } />
         </form>
-        <RaisedButton label='as Guest' primary={true} linkButton={true} href='/users' onMouseDown={ ()=> dispatchUser({firstName: 'Guest', email : 'Guest'}) } />
         <p style={{color : 'red', fontSize: '0.8em'}}>{ message }</p>
       </div>
       : <div><p style={{color : 'red', fontSize: '0.8em'}}>{ message }</p></div>

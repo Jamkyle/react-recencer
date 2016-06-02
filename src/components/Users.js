@@ -6,15 +6,19 @@ import { reduxForm } from 'redux-form'
 import { ListUsers } from 'compo/ListUsers'
 import {List, ListItem, MakeSelectable} from 'material-ui/List';
 import Register from 'compo/Register'
+import ObjectSelect from 'compo/ObjectSelect'
+
 import {Link} from 'react-router'
 import Loading from 'compo/Loading'
 import {Card, CardHeader, CardTitle, CardText} from 'material-ui/Card';
+
+import {style} from 'styles/style'
 
 const { isLoaded, isEmpty, dataToJS } = helpers
 
 
 
-@firebase([ 'users', 'sections' ])
+@firebase([ 'users' ])
 @connect(({firebase, user}) => ({
   user,
   users : dataToJS(firebase, 'users'),
@@ -48,34 +52,10 @@ class Users extends Component {
         {user.admin ? <Register button={'ajouter utilisateur'}/> : null}
       { usersList }
 
-      <Link to={'/'} > home </Link>
       </div>
     )
   }
 
-}
-
-
-export class ObjectSelect extends Component {
-
-  getValues(e){
-    let sections = []
-    for(let i in e.options){
-      if(e.options[i].selected){
-        sections.push(e.options[i].value)
-      }
-    }
-    return sections
-  }
-
-  render(){
-    const { option, multiple, onBlur, onChange, options, value, ...rest } = this.props
-    return (
-      <select multiple onChange = { event =>  { onChange( this.getValues(event.target) ) } }  value = { [...value] } {...rest}>
-        {option.map((section, id) => <option key={id} value={section.name} >{section.name}</option>)}
-      </select>
-    )
-  }
 }
 
 export default Users
