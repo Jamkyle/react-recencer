@@ -76,7 +76,7 @@ class Section extends Component {
         return  <MenuItem
                   key={user.id}
                   primaryText={ user.firstName+' '+user.lastName}
-                  onTouchTap={ ()=> this.addSection(section, user) }
+                  onTouchTap={ ()=> this.addSectionToUser(section, user) }
                 />
       }
     )
