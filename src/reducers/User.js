@@ -11,6 +11,9 @@ const user = (state = localUser || {}, action) =>{
     case "UPDATE_USER":
       return {...action.user, isAuth : true}
       break;
+    case "ADD_SECTION_USER":
+      return {...action.user, isAuth : true}
+      break;
     default: return state
 
   }

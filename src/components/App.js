@@ -75,6 +75,9 @@ class App extends Component {
     }
       if(user.email!=null){
       link = (<div>
+                {
+                  user.admin ? <Link to='/remove' style={style.noDeco} > <MenuItem primaryText="Remove" onTouchTap={this.handleRequestClose} /></Link> : null
+                }
                 <Link to='/sections' style={style.noDeco} > <MenuItem primaryText="Sections" onTouchTap={this.handleRequestClose} /> </Link>
                 <Link to='/users' style={style.noDeco}> <MenuItem primaryText="Users" onTouchTap={this.handleRequestClose} /> </Link>
                 <MenuItem primaryText="Profile" onTouchTap={()=>{ goTo(`/user/${user.id}`); this.handleRequestClose() } } disabled={ (user.email==='Guest')}/>

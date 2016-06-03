@@ -8,6 +8,7 @@ import Register from 'compo/Register';
 import Users from 'compo/Users';
 import User from 'compo/User';
 import Pages from 'compo/Pages';
+import Trash from 'compo/Trash';
 
 import 'compo/styles/style.scss'
 
@@ -82,6 +83,7 @@ const Routes = (
               <Route path='/register' component={Register} />
               <Route path='/' component={Pages} onEnter={requiredAuth}>
                 <Route path='sections' component={Sections} />
+                <Route path='/remove' component={Trash} />
                 <Route path='/section/:sectionId' component={Section}/>
                 <Route path='users' component={Users} />
                 <Route path='/user/:userId' component={User}/>

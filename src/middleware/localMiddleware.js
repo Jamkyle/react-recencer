@@ -1,9 +1,15 @@
 import _ from 'lodash'
 import {push} from 'react-router-redux'
+import { firebase, helpers } from 'redux-react-firebase'
+
+
+const { toJS } = helpers
 
 export const localMiddleware = store => next => action => {
-  const { user , type, data, form } = action
+
+  const { user , type, data, form, section } = action
   const { dispatch , getState } = store
+
   switch (type) {
     case 'CURRENT_USER':
       localStorage.setItem( 'currentUser', JSON.stringify({ ...user, isAuth : true }) )
@@ -21,6 +27,10 @@ export const localMiddleware = store => next => action => {
       dispatch(push('/'))
       break;
     case 'UPDATE_USER' :
+      next(action)
+      localStorage.setItem( 'currentUser', JSON.stringify({ ...user, isAuth : true }) )
+      break;
+    case 'ADD_SECTION_USER' :
       next(action)
       localStorage.setItem( 'currentUser', JSON.stringify({ ...user, isAuth : true }) )
       break;

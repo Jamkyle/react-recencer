@@ -39,18 +39,18 @@ class Sections extends Component {
   validate(e){
     let bool = false, message
 
-    const { sections, firebase } = this.props
+    const { sections, firebase, resetForm } = this.props
     if(sections != null)
-      for(let i in sections){
-        if(sections[i].name === e.name)
-          bool = true
-      }
+    for(let i in sections){
+      if(_.lowerCase(sections[i].name) === _.lowerCase(e.name))
+      bool = true
+    }
 
     if (bool )
-      this.setState({message : ERROR_ADD_SECTION })
+    this.setState({message : ERROR_ADD_SECTION })
     else {
       let ref = firebase.push('sections')
-      ref.set({...e, id:ref.key()})
+      ref.set({...e, id:ref.key()}, ()=>{resetForm()})
       this.setState({ message : SUCCESS_ADD_SECTION })
     }
   }
@@ -59,86 +59,91 @@ class Sections extends Component {
     const { routes, firebase, fields: { name, description }, handleSubmit, sections, user, users, back, goTo } = this.props
     // console.log(sections);
     let title = '', form = null
-    let sectionsList = (!isLoaded(sections)) ?
-                          <Loading />
-                        : (isEmpty(sections) ) ?
-                              'sections is empty'
-                            : _.map(sections, (section, id) => {
-                               return (
-                                 <ListItem
-                                  key={id}
-                                  nestedItems={
-                                    _.map(users, (user, i)=>{
-                                      return (
-                                        _.indexOf(user.sections, section.name)!== -1 ) ?
-                                        <ListItem key={i}> { user.firstName } </ListItem>
-                                        : null
-                                    })
-                                  }
-                                  primaryTogglesNestedList={true}
-                                  primaryText={section.name}
-                                  secondaryText={section.description}
-                                  rightIconButton={
-                                    (user.admin)?
-                                    <IconButton
-                                       tooltip='editer'
-                                       onClick={
-                                         ()=> { goTo(id) }
-                                       }
-                                     >
-                                      <ActionAssignment />
-                                     </IconButton>
-                                     :<IconButton
-                                        tooltip='voir'
-                                        onClick={
-                                          ()=> { goTo(id) }
-                                        }
-                                      >
-                                       <ActionVisibility />
-                                      </IconButton>
-                                   }
-                                  >{/*ListItem*/}
+    let sectionsList = (
+      (!isLoaded(sections)) ?
+      <Loading />
+      : (isEmpty(sections) ) ?
+      'sections is empty'
+      : _.map(sections, (section, id) => {
+        if(!section.delete)
+          return (
+          <ListItem
+          key={id}
+          nestedItems={
+            _.map(users, (user, i) => {
+              return (
+                (_.indexOf(user.sections, section.name)!== -1 ) ?
+                <ListItem key={i}> { user.firstName } </ListItem>
+                : null
+              )
+            })
+          }
+          primaryTogglesNestedList={true}
+          primaryText={section.name}
+          secondaryText={section.description}
+          rightIconButton={
+            (user.admin)?
+              <IconButton
+                tooltip='editer'
+                onClick={
+                  ()=> { goTo(id) }
+                }
+              >
+                <ActionAssignment />
+              </IconButton>
+              :<IconButton
+                tooltip='voir'
+                onClick={
+                  ()=> { goTo(id) }
+                }
+              >
+                <ActionVisibility />
+              </IconButton>
+          }
+            >{/*ListItem*/}
 
-                                 </ListItem>
-                                )
-                              })
+            </ListItem>
+          )
+        })
+      )
       if(user.admin)
-       {
+      {
         title = 'Gestionnaire de Sections'
         form =(
           <form onSubmit = { handleSubmit( (data) => { this.validate(data) } ) }>
-            <TextField
-              floatingLabelText="Name"
-              { ...name }
-            required /><br/>
-            <TextField
-              floatingLabelText="Description"
-              multiLine
-              rows={2}
-              { ...description }
-            required /><br/>
-            <RaisedButton type="submit" >Ajouter</RaisedButton>
+          <TextField
+          floatingLabelText="Name"
+          { ...name }
+          required /><br/>
+          <TextField
+          floatingLabelText="Description"
+          multiLine
+          rows={2}
+          { ...description }
+          required /><br/>
+          <RaisedButton type="submit" >Ajouter</RaisedButton>
           </form>
-       )
+        )
       }
-       else title = 'Sections'
+      else title = 'Sections'
 
 
-    return (
-      <div>
+      return (
+        <div>
         <CardHeader title={title}/>
         {form}
+        {this.state.message}
         <Subheader>Liste de toutes les sections</Subheader>
         <List>
-          { sectionsList }
+        { sectionsList }
         </List>
-      </div>
-    )
+        </div>
+      )
+    }
+
   }
 
-}
 
 
 
-
-export default Sections
+  export default Sections

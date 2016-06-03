@@ -43,7 +43,10 @@ let SelectableList = MakeSelectable(List)
     users : dataToJS(state.firebase, 'users'),
     firebaseRef: state.firebase
   }),
-  (dispatch)=>({ update : (user) => dispatch({ type:'UPDATE_USER', user }) })
+  (dispatch)=>({
+    update : (user) => dispatch({ type:'UPDATE_USER', user }),
+    // addSectionUser : (section, user) => dispatch({ type:'ADD_SECTION_USER', user, section })
+  })
 )
 @reduxForm({
     form: 'section',     // a unique name for this form
@@ -53,7 +56,12 @@ let SelectableList = MakeSelectable(List)
 )
 class Section extends Component {
 
-  addSection = (section, user) => {
+  deleteSection = (section) => {
+    const {params, firebase} = this.props
+    firebase.set(`sections/${params.sectionId}`, {...section, delete:true })
+  }
+
+  addSectionToUser = (section, user) => {
     const {firebase} = this.props
     if(user.sections)
       firebase.set(`users/${user.id}/sections`, _.compact([...user.sections, section.name]), ()=> this.updateUser() )
@@ -125,12 +133,13 @@ class Section extends Component {
           { ...description }
         required /><br/>
           <RaisedButton type="submit" > Update </RaisedButton>
+          <RaisedButton onClick={()=> this.deleteSection(section)} >Delete this section</RaisedButton>
         </form>
       )
     }
     return (
       <Card style={ style.card }>
-        <CardHeader title={ section.name } subtitle={section.description}/>
+        <CardHeader title={ section.name } subtitle={ section.description }/>
         <List>
           {content}
           <Divider />
@@ -139,7 +148,7 @@ class Section extends Component {
             <ul>
               <IconButton
                 tooltip={_.indexOf(user.sections, section.name)==-1 ? 'Faire parti de cette section' : 'Vous faites déjà parti de la section'}
-                onClick={ () => this.addSection(section, user) }
+                onClick={ () => this.addSectionToUser(section, user) }
                 disabled = { user.email=='Guest'|| _.indexOf(user.sections, section.name)!==-1 }
               >
                 <SocialGroupAdd />

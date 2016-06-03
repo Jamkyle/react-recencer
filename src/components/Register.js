@@ -64,7 +64,7 @@ class Register extends Component {
 
     let allSections = (isEmpty(Sections) ) ?
     [{id: 0, name : 'aucun', description : 'aucun element'},]
-    : _.map(Sections)
+    : _.map(Sections, (section) => { if(!section.delete)return section })
     return (
       <div>
         <form onSubmit = { handleSubmit( (data) => { this.validate(data) } ) } >
