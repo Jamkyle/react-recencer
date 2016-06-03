@@ -17,8 +17,10 @@ import IconButton from 'material-ui/IconButton'
 import MenuItem from 'material-ui/MenuItem'
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import RaisedButton from 'material-ui/RaisedButton';
+import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
 import ContentAdd from 'material-ui/svg-icons/content/add';
+import SocialGroupAdd from 'material-ui/svg-icons/social/group-add';
 
 
 import {style} from 'styles/style'
@@ -38,8 +40,10 @@ let SelectableList = MakeSelectable(List)
   (state, {params}) =>({
     section : dataToJS(state.firebase, `sections/${params.sectionId}`) || localSection,
     user : state.user,
-    users : dataToJS(state.firebase, 'users')
-  })
+    users : dataToJS(state.firebase, 'users'),
+    firebaseRef: state.firebase
+  }),
+  (dispatch)=>({ update : (user) => dispatch({ type:'UPDATE_USER', user }) })
 )
 @reduxForm({
     form: 'section',     // a unique name for this form
@@ -52,9 +56,9 @@ class Section extends Component {
   addSection = (section, user) => {
     const {firebase} = this.props
     if(user.sections)
-      firebase.set(`users/${user.id}/sections`, _.compact([...user.sections, section.name]) )
-    else firebase.set(`users/${user.id}/sections`, [section.name] )
-
+      firebase.set(`users/${user.id}/sections`, _.compact([...user.sections, section.name]), ()=> this.updateUser() )
+    else
+      firebase.set(`users/${user.id}/sections`, [section.name], ()=> this.updateUser(user) )
   }
 
   listUsersRender = ( aList ) => {
@@ -70,14 +74,28 @@ class Section extends Component {
     )
   }
 
+  updateUser = () => {
+    const { firebaseRef, update, user } = this.props
+      update( dataToJS(firebaseRef, `users/${user.id}`) )
+  }
+
   render(){
-    const { firebase, fields: { name , description }, handleSubmit, section, params, user, users } = this.props
+    const {
+      firebase,
+      fields: { name , description },
+      handleSubmit,
+      section,
+      params,
+      user,
+      users,
+      update
+    } = this.props
     let content, listUsers = {}, add
 
       listUsers = _.compact(_.map(
         users, user => {
            if( _.indexOf(user.sections, section.name)!== -1 ){
-             return {...user}
+             return { ...user }
            }
         }
       ))
@@ -103,23 +121,30 @@ class Section extends Component {
         <TextField
           floatingLabelText="Description"
           multiLine
-          rows={2}
+          rows={ 2 }
           { ...description }
         required /><br/>
-          <RaisedButton type="submit" >Update</RaisedButton>
+          <RaisedButton type="submit" > Update </RaisedButton>
         </form>
       )
     }
     return (
-      <Card style={style.card}>
-        <CardHeader title={section.name} subtitle={section.description}/>
+      <Card style={ style.card }>
+        <CardHeader title={ section.name } subtitle={section.description}/>
         <List>
           {content}
           <Divider />
           <div>
             <Subheader> Membres </Subheader>
             <ul>
-              <ListUsers users={listUsers} admin={user.admin} section={section}/>
+              <IconButton
+                tooltip={_.indexOf(user.sections, section.name)==-1 ? 'Faire parti de cette section' : 'Vous faites déjà parti de la section'}
+                onClick={ () => this.addSection(section, user) }
+                disabled = { user.email=='Guest'|| _.indexOf(user.sections, section.name)!==-1 }
+              >
+                <SocialGroupAdd />
+              </IconButton>
+              <ListUsers users={listUsers} admin={ user.admin } section={ section }/>
               {add}
             </ul>
           </div>

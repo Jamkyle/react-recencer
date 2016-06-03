@@ -28,7 +28,7 @@ const { isLoaded, isEmpty, dataToJS } = helpers
   users : dataToJS(firebase, 'users'),
   user
 }),
-(dispatch)=> ({goTo : (id) => dispatch(push(`section/${id}`)) })
+(dispatch)=> ({goTo : (id) => dispatch(push(`/section/${id}`)) })
 )
 @reduxForm({
   form: 'sections',     // a unique name for this form

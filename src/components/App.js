@@ -78,6 +78,7 @@ class App extends Component {
                 <Link to='/sections' style={style.noDeco} > <MenuItem primaryText="Sections" onTouchTap={this.handleRequestClose} /> </Link>
                 <Link to='/users' style={style.noDeco}> <MenuItem primaryText="Users" onTouchTap={this.handleRequestClose} /> </Link>
                 <MenuItem primaryText="Profile" onTouchTap={()=>{ goTo(`/user/${user.id}`); this.handleRequestClose() } } disabled={ (user.email==='Guest')}/>
+                <Divider inset={true}/>
               </div>
             )
      }
@@ -95,7 +96,6 @@ class App extends Component {
           animation={PopoverAnimationVertical}>
           <Menu>
             {link}
-            <Divider inset={true}/>
             <Link to='/register' style={style.noDeco}><MenuItem primaryText="Se recenser" onTouchTap={this.handleRequestClose} /></Link>
             {connecter}
           </Menu>
@@ -103,6 +103,9 @@ class App extends Component {
         <Card style={style.card}>
           {this.props.children}
           {buttonBack}
+          {
+            location.pathname === '/' ? <CardText> cette application a été créé afin de pourvoir avoir une gestion et une communication plus facile aux sein d une association </CardText> : <span>©Copyright 2016 Recenser</span>
+          }
         </Card>
       </div>
     )

@@ -17,14 +17,26 @@ const { dataToJS } = helpers
   'users'
 ])
 @connect((state, props) => ({
-    section : props.section || {}
+    section : props.section || {},
+    currentUser : state.user,
+    firebaseRef : state.firebase
   }),
-  (dispatch) => ({ goTo : (id) => dispatch(push(`/user/${id}`)) })
+  (dispatch) => ({
+    goTo : (id) => dispatch(push(`/user/${id}`)),
+    update : (user) => dispatch({ type:'UPDATE_USER', user })
+  })
 )
 export class ListUsers extends Component{
+
+  updateUser = () => {
+    const { firebaseRef, currentUser, update } = this.props
+    update( dataToJS(firebaseRef, `users/${currentUser.id}`) )
+
+  }
+
   render(){
 
-    const {users, admin, firebase, goTo, section} = this.props
+    const {users, admin, firebase, goTo, section, currentUser} = this.props
     // console.log(users)
     // let usersList = users.map((user, i) => {console.log(user);
     //   let section = user.sections.map((section)=> { return <span key={section}>{section} </span>})
@@ -34,7 +46,7 @@ export class ListUsers extends Component{
     let usersList = _.map(users,
       user => {
         let index
-        if(admin){ index  = _.findIndex(user.sections, (aSection) => aSection == section.name) }
+        if(admin || user.id === currentUser.id){ index  = _.findIndex(user.sections, (aSection) => aSection == section.name) }
 
         return (
           <ListItem
@@ -43,10 +55,12 @@ export class ListUsers extends Component{
               () => goTo(user.id)
             }
             rightIconButton={
-               admin ? <IconButton
+               ( (admin || user.id === currentUser.id) && location.pathname!=='/users' ) ? <IconButton
                           tooltip='remove'
                           onClick={
-                            ()=> { firebase.remove(`users/${user.id}/sections/${index}`) }
+                            ()=> {
+                              firebase.remove( `users/${user.id}/sections/${index}`, () => this.updateUser() );
+                           }
                           }
                         >
                           <ContentRemoveCircle />

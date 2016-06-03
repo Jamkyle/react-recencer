@@ -51,7 +51,6 @@ class Users extends Component {
       <CardHeader title={title} subtitle='listes des utilisateurs' />
         {user.admin ? <Register button={'ajouter utilisateur'}/> : null}
       { usersList }
-
       </div>
     )
   }

@@ -1,11 +1,9 @@
 import _ from 'lodash'
 import {push} from 'react-router-redux'
 
-
 export const localMiddleware = store => next => action => {
   const { user , type, data, form } = action
   const { dispatch , getState } = store
-
   switch (type) {
     case 'CURRENT_USER':
       localStorage.setItem( 'currentUser', JSON.stringify({ ...user, isAuth : true }) )
@@ -20,7 +18,11 @@ export const localMiddleware = store => next => action => {
       localStorage.removeItem('currentUser')
       localStorage.removeItem('userMod')
       localStorage.removeItem('sectionMod')
-      store.dispatch(push('/'))
+      dispatch(push('/'))
+      break;
+    case 'UPDATE_USER' :
+      next(action)
+      localStorage.setItem( 'currentUser', JSON.stringify({ ...user, isAuth : true }) )
       break;
     case 'redux-form/INITIALIZE':
       let aData = {

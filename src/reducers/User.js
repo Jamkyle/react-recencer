@@ -8,6 +8,9 @@ const user = (state = localUser || {}, action) =>{
     case "DECONNECT_USER":
       return {}
       break;
+    case "UPDATE_USER":
+      return {...action.user, isAuth : true}
+      break;
     default: return state
 
   }

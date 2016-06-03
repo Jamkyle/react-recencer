@@ -70,7 +70,7 @@ class User extends Component {
   }
 
   render() {
-      const { back, Sections, fields: { firstName, lastName, email, sections, admin },params, currentUser, modUser, handleSubmit, onChange, goTo} = this.props
+      const { back, Sections, fields: { firstName, lastName, email, sections, admin }, params, currentUser, modUser, handleSubmit, onChange, goTo} = this.props
       const { message } = this.state
       let form, buttonModif
       let allSections = (isEmpty(Sections) ) ?
