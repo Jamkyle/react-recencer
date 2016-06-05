@@ -1,5 +1,19 @@
 $color: #EEE;
 
+
 body {
   background-color: $color;
+}
+
+.app{
+  text-align: center
+}
+.warper{
+  margin: auto;
+  max-width: 90vw;
+  text-align: left;
+}
+.login{
+  text-align: center;
+  margin: 10 auto;
 }

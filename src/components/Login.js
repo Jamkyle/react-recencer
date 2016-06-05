@@ -9,7 +9,9 @@ import { Link } from 'react-router'
 import Loading from 'compo/Loading'
 
 import TextField from 'material-ui/TextField'
+import Paper from 'material-ui/Paper'
 import RaisedButton from 'material-ui/RaisedButton'
+import Divider from 'material-ui/Divider'
 import FlatButton from 'material-ui/FlatButton'
 
 import FirebaseTokenGenerator from 'firebase-token-generator'
@@ -62,13 +64,18 @@ class Login extends Component {
     const { message } = this.state
     return (
       ( user.email == null )?
-      <div>
+      <div className='login'>
         <form onSubmit = { handleSubmit( (data) => { this.validate(data) } ) } >
-        <TextField
-          floatingLabelText="Email"
-          { ...email }
-          type="email"
-        required />
+
+          <TextField
+            floatingLabelText="Email"
+            { ...email }
+            type="email"
+            underlineShow={false}
+          required />
+
+          <br/>
+        <Divider />
           <FlatButton type="submit" >Se connecter </FlatButton>
           <RaisedButton label='as Guest' primary={true} onMouseDown={ ()=> { login({ firstName: 'Guest', email : 'Guest' }) } } />
         </form>

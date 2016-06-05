@@ -56,7 +56,7 @@ export class ListUsers extends Component{
             }
             rightIconButton={
                ( (admin || user.id === currentUser.id) && location.pathname!=='/users' ) ? <IconButton
-                          tooltip='remove'
+                          tooltip='retirer'
                           onClick={
                             ()=> {
                               firebase.remove( `users/${user.id}/sections/${index}`, () => this.updateUser() );

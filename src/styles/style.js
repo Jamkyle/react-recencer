@@ -1,4 +1,4 @@
-import {blue900} from 'material-ui/styles/colors';
+import {blue400} from 'material-ui/styles/colors';
 
 export const style = {
      menu : {
@@ -17,7 +17,7 @@ export const style = {
       padding: '2em'
     },
     palette : {
-      blue900 : blue900
+      blue900 : blue400
     }
 
 }

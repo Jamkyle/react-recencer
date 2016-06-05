@@ -8,6 +8,7 @@ import { Link } from 'react-router'
 import Loading from 'compo/Loading'
 import Register from 'compo/Register'
 import AppBar from 'material-ui/AppBar';
+import Paper from 'material-ui/Paper';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import Divider from 'material-ui/Divider';
@@ -89,27 +90,29 @@ class App extends Component {
       buttonBack = <FlatButton onMouseDown={ () => back() } className='buttonBack'> back </FlatButton> : null
 
     return (
-      <div>
-        <AppBar title={welcome} style={{backgroundColor: style.palette.blue900}} onLeftIconButtonTouchTap={this.showMenu}/>
-        <Popover open={this.state.open}
-          anchorEl={this.state.anchorEl}
-          anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
-          targetOrigin={{horizontal: 'left', vertical: 'top'}}
-          onRequestClose={this.handleRequestClose}
-          animation={PopoverAnimationVertical}>
-          <Menu>
-            {link}
-            <Link to='/register' style={style.noDeco}><MenuItem primaryText="Se recenser" onTouchTap={this.handleRequestClose} /></Link>
-            {connecter}
-          </Menu>
-        </Popover>
-        <Card style={style.card}>
-          {this.props.children}
-          {buttonBack}
-          {
-            location.pathname === '/' ? <CardText> cette application a été créé afin de pourvoir avoir une gestion et une communication plus facile aux sein d une association </CardText> : <span>©Copyright 2016 Recenser</span>
-          }
-        </Card>
+      <div className='app' >
+        <Paper className='warper' zDepth={4} >
+          <AppBar title={welcome} style={{backgroundColor: style.palette.blue900}} onLeftIconButtonTouchTap={this.showMenu} />
+          <Popover open={this.state.open}
+            anchorEl={this.state.anchorEl}
+            anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
+            targetOrigin={{horizontal: 'left', vertical: 'top'}}
+            onRequestClose={this.handleRequestClose}
+            animation={PopoverAnimationVertical}>
+            <Menu>
+              {link}
+              <Link to='/register' style={style.noDeco}><MenuItem primaryText="Se recenser" onTouchTap={this.handleRequestClose} /></Link>
+              {connecter}
+            </Menu>
+          </Popover>
+          <Card style={style.card}>
+            {this.props.children}
+            {buttonBack}
+            {
+              location.pathname === '/' ? <CardText> cette application a été créé afin de pourvoir avoir une gestion et une communication plus facile aux sein d une association </CardText> : <span>©Copyright 2016 Recenser</span>
+            }
+          </Card>
+        </Paper>
       </div>
     )
   }

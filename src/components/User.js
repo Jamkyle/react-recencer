@@ -45,43 +45,29 @@ const localMod = JSON.parse(localStorage.getItem('userMod')) || {}
 )
 class User extends Component {
 
-  state = {message : ''}
-  validate(e){
-    const { users, firebase, params, modUser } = this.props
-    let bool = false, message, user, sections
-
-    if(e.admin === undefined)
-      e.admin = false
-
-      sections = _.compact(e.sections)
-      user = {...modUser, ...e, sections}
-
-    if(users != null)
-      for(let i in users){
-        if(users[i].email === e.email && i != params.userId)
-          bool = true
-      }
-    if(bool)
-      this.setState({message : ERROR_ON_REGISTER })
-    else {
-      firebase.set(`users/${params.userId}`, user )
-        this.setState({message : 'a bien été modifié'})
-    }
-  }
-
   render() {
-      const { back, Sections, fields: { firstName, lastName, email, sections, admin }, params, currentUser, modUser, handleSubmit, onChange, goTo} = this.props
-      const { message } = this.state
+      const { back, Sections,  params, currentUser, modUser, goTo} = this.props
       let form, buttonModif
+
       let allSections = (isEmpty(Sections) ) ?
       [{id: 0, name : 'aucun', description : 'aucun element'}]
       : _.map(Sections)
 
       let listSections = _.map(
         Sections, (section, id) => {
-            if( _.indexOf( modUser.sections, section.name)!== -1 ) return <ListItem key={id} onTouchTap={ () => goTo(`/section/${id}`) }> { section.name } </ListItem>
+            if( _.indexOf( modUser.sections, section.name)!== -1 )
+              return (
+              <ListItem
+               key={id}
+               onTouchTap={
+                 () => goTo(`/section/${id}`)
+               }
+              >
+                { section.name }
+              </ListItem>)
             }
           )
+
       if(currentUser.id === params.userId || currentUser.admin )
       {
         buttonModif = <CardHeader
@@ -93,26 +79,8 @@ class User extends Component {
           actAsExpander={true}
          />
         form = (
-
           <CardText expandable={true} >
-            <form onSubmit = { handleSubmit( (data) => { this.validate(data) } ) } >
-            <TextField
-              floatingLabelText="Prénom"
-              { ...firstName }
-            required /><br/>
-            <TextField
-              floatingLabelText="Nom"
-              { ...lastName }
-            required /><br/>
-            <TextField
-              floatingLabelText="Email"
-              { ...email }
-              type="email"
-            required /><br/>
-            <ObjectSelect multiple array={ allSections } title='Section' field={'name'} {...sections}/><br/>
-              {currentUser.admin ? <CheckBox label='admin' checked={ admin.checked } onCheck={ e => admin.onChange(e.target.checked) }/> : ''}<br/>
-              <RaisedButton type="submit" > Modifier </RaisedButton>
-            </form>
+            <Register id={params.userId} button={'Modifier'} localMod={localMod}/>
           </CardText>
         )
       }
@@ -128,7 +96,6 @@ class User extends Component {
             <div>Fait parti de(s) section(s): {listSections}</div>
           {buttonModif}
           {form}
-          <p style={{color : 'red', fontSize: '0.8em'}}>{ message }</p>
           </Card>
         </Paper>
       )

@@ -50,7 +50,7 @@ class Sections extends Component {
     this.setState({message : ERROR_ADD_SECTION })
     else {
       let ref = firebase.push('sections')
-      ref.set({...e, id:ref.key()}, ()=>{resetForm()})
+      ref.set({ ...e, id:ref.key() }, ()=>{ resetForm() })
       this.setState({ message : SUCCESS_ADD_SECTION })
     }
   }

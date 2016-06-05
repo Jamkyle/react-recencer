@@ -9,6 +9,7 @@ import Users from 'compo/Users';
 import User from 'compo/User';
 import Pages from 'compo/Pages';
 import Trash from 'compo/Trash';
+import { normalizeAge } from './utils/normalize';
 
 import 'compo/styles/style.scss'
 
@@ -35,7 +36,11 @@ injectTapEventPlugin();
 
 const reducers = combineReducers({
   firebase : firebaseStateReducer,
-  form : formReducer,
+  form : formReducer.normalize({
+    register : {
+      age : normalizeAge
+    }
+  }),
   users,
   user,
   routing

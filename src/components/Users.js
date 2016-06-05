@@ -19,7 +19,7 @@ const { isLoaded, isEmpty, dataToJS } = helpers
 
 
 @firebase([ 'users' ])
-@connect(({firebase, user}) => ({
+@connect( ({ firebase, user }) => ({
   user,
   users : dataToJS(firebase, 'users'),
   Sections : dataToJS(firebase, 'sections')

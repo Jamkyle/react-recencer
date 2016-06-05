@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import _ from 'lodash'
 import { helpers, firebase } from 'redux-react-firebase'
 import { connect } from 'react-redux'
+import { push } from 'react-router-redux'
 import { reduxForm } from 'redux-form'
 import Avatar from 'material-ui/Avatar';
 import { Link } from 'react-router';
@@ -45,6 +46,7 @@ let SelectableList = MakeSelectable(List)
   }),
   (dispatch)=>({
     update : (user) => dispatch({ type:'UPDATE_USER', user }),
+    goTo : (path) => dispatch(push(path))
     // addSectionUser : (section, user) => dispatch({ type:'ADD_SECTION_USER', user, section })
   })
 )
@@ -55,12 +57,14 @@ let SelectableList = MakeSelectable(List)
   ({firebase}, {params}) => ({ initialValues: dataToJS(firebase, `sections/${params.sectionId}`) || localSection})
 )
 class Section extends Component {
-
+  state = { message: '' }
+  // delete a section with it's id
   deleteSection = (section) => {
-    const {params, firebase} = this.props
-    firebase.set(`sections/${params.sectionId}`, {...section, delete:true })
+    const {params, firebase, goTo} = this.props
+    firebase.set(`sections/${section.id}`, {...section, delete:true })
+    goTo('/sections')
   }
-
+  // add a Section in an User and update
   addSectionToUser = (section, user) => {
     const {firebase} = this.props
     if(user.sections)
@@ -69,6 +73,7 @@ class Section extends Component {
       firebase.set(`users/${user.id}/sections`, [section.name], ()=> this.updateUser(user) )
   }
 
+  // render the list take in param
   listUsersRender = ( aList ) => {
     const { section } = this.props
     return _.map(
@@ -84,7 +89,28 @@ class Section extends Component {
 
   updateUser = () => {
     const { firebaseRef, update, user } = this.props
-      update( dataToJS(firebaseRef, `users/${user.id}`) )
+      update( dataToJS(firebaseRef, `users/${user.id}`) ) // dispatch the currentUser
+  }
+
+  validate(e){
+    let bool = false, message
+
+    const { sections, firebase, resetForm, section } = this.props
+    if(sections != null)
+    for(let i in sections){
+      if(_.lowerCase(sections[i].name) === _.lowerCase(e.name) && i != section.id)
+        bool = true
+    }
+
+    if (bool )
+      this.setState({message : 'Ce nom est déjà pris' })
+    else {
+      firebase.set(
+        `sections/${section.id}` ,
+        {...section, ...e},
+        () => this.setState({ message : 'Cette section à bien été mise à jour' })
+      )
+    }
   }
 
   render(){
@@ -121,7 +147,7 @@ class Section extends Component {
         </IconMenu>
       )
       content = (
-        <form onSubmit = { handleSubmit( (data) => { firebase.set(`sections/${params.sectionId}`, {...data}) } ) }>
+        <form onSubmit = { handleSubmit( (data) => { this.validate(data) } ) }>
         <TextField
           floatingLabelText="Name"
           { ...name }
@@ -133,7 +159,7 @@ class Section extends Component {
           { ...description }
         required /><br/>
           <RaisedButton type="submit" > Update </RaisedButton>
-          <RaisedButton onClick={()=> this.deleteSection(section)} >Delete this section</RaisedButton>
+          <RaisedButton onClick={ ()=> this.deleteSection(section) } > Delete this section </RaisedButton>
         </form>
       )
     }
@@ -142,10 +168,12 @@ class Section extends Component {
         <CardHeader title={ section.name } subtitle={ section.description }/>
         <List>
           {content}
+          {this.state.message}
           <Divider />
           <div>
             <Subheader> Membres </Subheader>
             <ul>
+              {/* Button s'ajouter */}
               <IconButton
                 tooltip={_.indexOf(user.sections, section.name)==-1 ? 'Faire parti de cette section' : 'Vous faites déjà parti de la section'}
                 onClick={ () => this.addSectionToUser(section, user) }
@@ -154,6 +182,7 @@ class Section extends Component {
                 <SocialGroupAdd />
               </IconButton>
               <ListUsers users={listUsers} admin={ user.admin } section={ section }/>
+              {/* Button admin ajouter un utilisateur */}
               {add}
             </ul>
           </div>
