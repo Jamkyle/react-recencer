@@ -60,7 +60,7 @@ export class ListUsers extends Component{
                           onClick={
                             ()=> {
                               firebase.remove( `users/${user.id}/sections/${index}`, () => this.updateUser() );
-                           }
+                            }
                           }
                         >
                           <ContentRemoveCircle />

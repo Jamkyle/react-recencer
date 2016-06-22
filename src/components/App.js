@@ -1,8 +1,15 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import _ from 'lodash'
-import { helpers, firebase } from 'redux-react-firebase'
+import {
+  helpers,
+  firebase
+} from 'redux-react-firebase'
 import { connect } from 'react-redux'
-import { browserHistory, push, goBack } from 'react-router-redux'
+import {
+  browserHistory,
+  push,
+  goBack
+} from 'react-router-redux'
 import { reduxForm } from 'redux-form'
 import { Link } from 'react-router'
 import Loading from 'compo/Loading'
@@ -12,7 +19,10 @@ import Paper from 'material-ui/Paper';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import Divider from 'material-ui/Divider';
-import {Popover, PopoverAnimationVertical} from 'material-ui/Popover';
+import {
+  Popover,
+  PopoverAnimationVertical
+} from 'material-ui/Popover';
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
 import FlatButton from 'material-ui/FlatButton';
 
@@ -65,7 +75,7 @@ class App extends Component {
     if(user.email!=null){
       (user.admin) ? isAdmin='- (admin)' : isAdmin='- (membre)'
       welcome = `Bonjour ${user.firstName} ${isAdmin}`
-      connecter = (<MenuItem primaryText='Se déconnecter' onTouchTap={ ()=>{this.deconnect()} } />)
+      connecter = (<MenuItem primaryText='Se déconnecter' onTouchTap={ ()=>{ this.deconnect() } } />)
     }
     else {
       if(location.pathname !== '/')
@@ -109,7 +119,7 @@ class App extends Component {
             {this.props.children}
             {buttonBack}
             {
-              location.pathname === '/' ? <CardText> cette application a été créé afin de pourvoir avoir une gestion et une communication plus facile aux sein d une association </CardText> : <span>©Copyright 2016 Recenser</span>
+              location.pathname === '/' ? <CardText> cette application a été créé afin de pourvoir avoir une gestion et une communication plus facile au sein d une association </CardText> : <span>©Copyright 2016 Recenser</span>
             }
           </Card>
         </Paper>
